@@ -1,0 +1,13 @@
+/**/action_bridge:
+  ros__parameters:
+    move_to_pose:
+      server: move_to_pose
+      client: navigate_to_pose
+      frame_id: map
+      behavior_tree: ""
+    load:
+      server: load
+      client: machine/load
+    dump:
+      server: dump
+      client: machine/dump
