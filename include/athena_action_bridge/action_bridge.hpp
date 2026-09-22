@@ -18,6 +18,10 @@ namespace athena_action_bridge
  * @brief Exposes an action server of type FromT and forwards every goal to an
  * action server of type ToT. Feedback and results are converted back.
  * Cancel requests are forwarded to the downstream goal.
+ *
+ * The feedback and result converters also receive the original goal.
+ * The result converter returns true if the goal succeeded; otherwise the goal
+ * is canceled (when a cancel was requested) or aborted.
  */
 template<typename FromT, typename ToT>
 class ActionBridge
@@ -27,10 +31,12 @@ public:
   using ClientHandle = rclcpp_action::ClientGoalHandle<ToT>;
 
   using GoalConverter = std::function<typename ToT::Goal(const typename FromT::Goal &)>;
-  using FeedbackConverter =
-    std::function<void(const typename ToT::Feedback &, typename FromT::Feedback &)>;
-  using ResultConverter = std::function<void(
-        rclcpp_action::ResultCode, const typename ToT::Result *, typename FromT::Result &)>;
+  using FeedbackConverter = std::function<void(
+        const typename FromT::Goal &, const typename ToT::Feedback &,
+        typename FromT::Feedback &)>;
+  using ResultConverter = std::function<bool(
+        const typename FromT::Goal &, rclcpp_action::ResultCode,
+        const typename ToT::Result *, typename FromT::Result &)>;
 
   ActionBridge(
     rclcpp::Node * node,
@@ -125,7 +131,7 @@ private:
           return;
         }
         auto out = std::make_shared<typename FromT::Feedback>();
-        convert_feedback_(*feedback, *out);
+        convert_feedback_(*handle->get_goal(), *feedback, *out);
         handle->publish_feedback(out);
       };
 
@@ -154,9 +160,9 @@ private:
     }
 
     auto out = std::make_shared<typename FromT::Result>();
-    convert_result_(code, result, *out);
+    const bool succeeded = convert_result_(*handle->get_goal(), code, result, *out);
 
-    if (code == rclcpp_action::ResultCode::SUCCEEDED) {
+    if (succeeded) {
       RCLCPP_INFO(node_->get_logger(), "[%s] Goal succeeded", server_name_.c_str());
       handle->succeed(out);
     } else if (code == rclcpp_action::ResultCode::CANCELED && handle->is_canceling()) {

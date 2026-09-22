@@ -7,7 +7,7 @@
       behavior_tree: ""
     load:
       server: load
-      client: machine/load
+      client: load_material
     dump:
       server: dump
-      client: machine/dump
+      client: dump_material

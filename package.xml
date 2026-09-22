@@ -9,10 +9,11 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>standard_msgs</depend>
+  <depend>material_handler_msgs</depend>
   <depend>nav2_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>
+  <depend>standard_msgs</depend>
 
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend>launch</exec_depend>
