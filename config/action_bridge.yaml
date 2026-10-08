@@ -1,4 +1,4 @@
-/**/action_bridge:
+/**:
   ros__parameters:
     move_to_pose:
       server: move_to_pose
@@ -7,7 +7,7 @@
       behavior_tree: ""
     load:
       server: load
-      client: load_material
+      client: send_load
     dump:
       server: dump
-      client: dump_material
+      client: send_dump

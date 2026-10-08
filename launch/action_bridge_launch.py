@@ -14,7 +14,7 @@ def generate_launch_description():
     )
 
     namespace = LaunchConfiguration("namespace")
-    params_file = LaunchConfiguration("params_file")
+    bridge_params_file = LaunchConfiguration("bridge_params_file")
     use_sim_time = LaunchConfiguration("use_sim_time")
     log_level = LaunchConfiguration("log_level")
 
@@ -25,7 +25,7 @@ def generate_launch_description():
             description="Namespace of the robot, for example husky",
         ),
         DeclareLaunchArgument(
-            "params_file",
+            "bridge_params_file",
             default_value=default_params,
             description="Parameter file with the action names",
         ),
@@ -45,7 +45,7 @@ def generate_launch_description():
             name="action_bridge",
             namespace=namespace,
             parameters=[
-                params_file,
+                bridge_params_file,
                 {"use_sim_time": ParameterValue(use_sim_time, value_type=bool)},
             ],
             arguments=["--ros-args", "--log-level", log_level],
